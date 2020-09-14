@@ -60,5 +60,32 @@ class VerifyUser {
         }  
     }
   }
+
+  static async applicationVerify(req, res, next) {
+    try {
+      const header = req.headers['authorization'];
+      const bearer = header.split(' ');
+      const token = bearer[1];
+      req.token = token;
+
+      const { id, role } = await Helper.verifyToken(token);
+      if (id !== req.params.id && role !== "admin") {
+        return res.status(403).json({
+          message: 'Forbidden access'
+        });
+      }
+      next();
+    } catch (error) {
+      if (error.message === "Cannot read property 'split' of undefined") {
+        return res.status(400).json({
+          message: 'Please login'
+        });
+      } else {
+        return res.status(400).json({
+          message: error.message
+        });
+      }
+    }
+  }
 }
 export default VerifyUser;

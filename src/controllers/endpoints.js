@@ -2,9 +2,9 @@ import model from '../db/models';
 import { dataUri } from '../middleware/multer';
 import { uploader } from '../db/config/cloudinaryConfig';
 
-const { Application } = model;
+const { Endpoint } = model;
 
-class ApplicationManager {
+class EndpointsManager {
 
     static async viewApplication(req, res) {
         try {
@@ -22,7 +22,7 @@ class ApplicationManager {
                 message: error.message
             });
         }
-        
+
     }
 
 
@@ -55,38 +55,41 @@ class ApplicationManager {
     }
 
 
-    static async getAllApplications(req, res) {
+    static async getAllEndpoints(req, res) {
         try {
-            const findApplications = await Application.findAll();
-            if (findApplications) {
-                return res.status(200).json({ total: findApplications.length, applications: findApplications });
+            const findEndpoints = await Endpoint.findAll();
+            if (findEndpoints) {
+                return res.status(200).json({ total: findEndpoints.length, Endpoints: findEndpoints });
             }
-            return res.status(400).json({ message: "No Application Found" });
+            return res.status(400).json({ message: "No Endpoint Found" });
         } catch (error) {
             return res.status(500).json({ error });
         }
     }
 
-    static async addApplication(req, res) {
-        const { title, description, userId, userName } = req.body
+    static async addEndpoint(req, res) {
+        const { name, description, url, type, body, success, failure } = req.body
 
         try {
-            const findApplication = await Application.findOne({
-                where: { title }
+            const findEndpoint = await Endpoint.findOne({
+                where: { url }
             });
-            if (findApplication) {
+            if (findEndpoint) {
                 return res.status(400).json({
-                    message: 'Application already exists.'
+                    message: 'endpoint already exists.'
                 });
             }
-            await Application
+            await Endpoint
                 .create({
-                    title,
+                    name,
                     description,
-                    userId,
-                    userName
+                    url,
+                    type,
+                    body,
+                    success,
+                    failure
                 })
-            return res.status(201).send({ message: 'Application successfully created', title, description, userId, userName });
+            return res.status(201).send({ message: 'Endpoint successfully created', name, description, url, type, body, success, failure });
         } catch (error) {
             return res.status(400).json({
                 status: 400,
@@ -97,4 +100,4 @@ class ApplicationManager {
 
 }
 
-export default ApplicationManager;
+export default EndpointsManager;
