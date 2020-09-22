@@ -5,8 +5,8 @@ import verifyUser from '../middleware/verifyUser';
 const route = express.Router();
 
 route.post('/', verifyUser.isAdmin, users.signUp);
+route.get('/', verifyUser.isAdmin, users.getAllusers);
+route.delete('/users/:id', verifyUser.isAdmin, users.deleteUser);
 route.post('/login', users.login);
-route.post('/forgot-password', users.forgotPassword);
-route.post('/reset-password/:userToken', users.resetPassword);
 
 export default route;

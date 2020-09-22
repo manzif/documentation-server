@@ -1,6 +1,5 @@
 import model from '../db/models';
 import Helper from '../helper/helper';
-import mail from '../helper/mail';
 
 const { User } = model;
 
@@ -87,6 +86,8 @@ class Users {
           username: findUser.dataValues.username,
           email: findUser.dataValues.email,
           role: findUser.dataValues.role,
+          firstname: findUser.dataValues.firstname,
+          lastname: findUser.dataValues.lastname,
           password: findUser.dataValues.password
         };
         const hashPassword = findUser.dataValues.password
@@ -106,7 +107,9 @@ class Users {
               email: payload.email,
               username: payload.username,
               role: userData.role,
-              id: userData.id
+              id: userData.id,
+              lastname: userData.lastname,
+              firstname: userData.firstname
 
             }
           });
@@ -127,58 +130,52 @@ class Users {
     }
   }
 
-  static async forgotPassword(req, res) {
-
-    const findUser = await User.findOne({ where: { email: req.body.email } });
-    if (findUser) {
-      const { username, email, role} = findUser.dataValues;
-      const user = {
-        username,
-        email,
-        role
-      };
-      const resetEmail = await mail.sendEmail(user);
-      if (resetEmail[0].statusCode === 202) {
-        return res.status(200).json({
-          message: 'Please check your email for password reset',
-        });
+  static async getAllusers(req, res) {
+    try {
+      const findUsers = await User.findAll();
+      let admin = 0
+      let developer = 0
+      let guest = 0
+      if (findUsers) {
+        findUsers.map((item) => {
+          if (item.role === 'admin') {
+            admin = admin + 1
+          }
+          if (item.role === 'developer') {
+            developer = developer + 1
+          }
+          if (item.role === 'guest') {
+            guest = guest + 1
+          }
+        })
+        return res.status(200).json({ total: findUsers.length, admin, developer, guest, users: findUsers });
       }
-      return res.status(400).json({
-        error: resetEmail,
-      });
+      return res.status(400).json({ message: "No Application Found" });
+    } catch (error) {
+      return res.status(500).json({ error });
     }
-    return res.status(404).json({ error: 'We coul not find your account check and try again', });
   }
 
-  static async resetPassword(req, res) {
+  static async deleteUser(req, res) {
     try {
-        const verifyToken = await Helper.verifyToken(req.params.userToken);
-        const { password } = req.body;
-        const hashedPassword = Helper.hashPassword(password, 10);
-        const findUser = await User.findOne({ where: { email: verifyToken.email } });
-        const comparePassword = Helper.comparePassword(findUser.dataValues.password, password);
-        if (comparePassword !== true) {
-          const updatePassword = await User.update(
-            { password: hashedPassword },
-            { where: { email: verifyToken.email } }
-          );
-
-          if (updatePassword[0] === 1) {
-            return res.status(200).json({
-              message: 'Password changed successful',
-            });
-          }
-        }
-        return res.status(406).json({
-          error: 'This password is the same as the one you had, Please change',
+      const id = req.params.id
+      const user = await User.findOne({ where: { id } });
+      if (user) {
+        await User.destroy({ where: { id } })
+        return res.status(200).json({
+          message: 'User deleted successfuly'
         });
-
-    } catch (error) {
+      }
       return res.status(404).json({
+        message: 'User does not exist'
+      });
+    } catch (error) {
+      return res.status(400).json({
         message: error.message
       });
     }
   }
+
 
 }
 

@@ -8,7 +8,7 @@ class ApplicationManager {
 
     static async viewApplication(req, res) {
         try {
-            const application = await Application.findOne({ where: { id: req.body.id } });
+            const application = await Application.findOne({ where: { id: req.params.id } });
             if (application) {
                 return res.status(200).json({
                     application: application
@@ -93,6 +93,26 @@ class ApplicationManager {
                 error,
             });
         }
+    }
+
+    static async deleteApplication(req, res) {
+            try {
+                const id = req.params.id
+                const application = await Application.findOne({ where: { id } });
+                if (application) {
+                    await Application.destroy({ where: { id } })
+                    return res.status(200).json({
+                        message: 'Application deleted successfuly'
+                    });
+                }
+                return res.status(404).json({
+                    message: 'Application does not exist'
+                });
+            } catch (error) {
+                return res.status(400).json({
+                    message: error.message
+                });
+            }
     }
 
 }
