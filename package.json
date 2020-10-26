@@ -5,7 +5,7 @@
   "author": "Manzi Fabrice",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon --exec babel-node ./src/server.js",
+    "dev": "nodemon --exec babel-node ./src/app.js",
     "drop_tables": "sequelize db:migrate:undo:all",
     "create_tables": "sequelize db:migrate && sequelize db:seed:all",
     "start": "node build/server.js",

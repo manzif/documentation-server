@@ -20,8 +20,11 @@ module.exports = {
       type: {
         type: Sequelize.STRING
       },
+      query: {
+        type: Sequelize.ARRAY(Sequelize.JSON)
+      },
       body: {
-        type: Sequelize.JSON
+        type: Sequelize.ARRAY(Sequelize.JSON)
       },
       success: {
         type: Sequelize.ARRAY(Sequelize.JSON)

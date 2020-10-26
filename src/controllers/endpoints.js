@@ -68,7 +68,7 @@ class EndpointsManager {
     }
 
     static async addEndpoint(req, res) {
-        const { name, description, url, type, body, success, failure } = req.body
+        const { name, description, url, type, query, body, success, failure } = req.body
 
         try {
             const findEndpoint = await Endpoint.findOne({
@@ -85,15 +85,16 @@ class EndpointsManager {
                     description,
                     url,
                     type,
+                    query,
                     body,
                     success,
                     failure
                 })
-            return res.status(201).send({ message: 'Endpoint successfully created', name, description, url, type, body, success, failure });
+            return res.status(201).send({ message: 'Endpoint successfully created', name, description, url, type, query, body, success, failure });
         } catch (error) {
             return res.status(400).json({
                 status: 400,
-                error,
+                message: error.message
             });
         }
     }
