@@ -74,7 +74,7 @@ class EndpointsManager {
             const findEndpoint = await Endpoint.findOne({
                 where: { url }
             });
-            if (findEndpoint) {
+            if (findEndpoint && findEndpoint.dataValues.url === url && findEndpoint.dataValues.type === type) {
                 return res.status(400).json({
                     message: 'endpoint already exists.'
                 });
