@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     url: DataTypes.STRING,
     type: DataTypes.STRING,
+    headers: DataTypes.ARRAY(DataTypes.JSON),
     query: DataTypes.ARRAY(DataTypes.JSON),
     body: DataTypes.ARRAY(DataTypes.JSON),
     success: DataTypes.ARRAY(DataTypes.JSON),
