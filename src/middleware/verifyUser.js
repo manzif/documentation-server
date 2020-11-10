@@ -12,7 +12,7 @@ class VerifyUser {
       req.token = token;
 
       const { id, role } = await Helper.verifyToken(token);
-          
+
       if (id !== req.params.id && role !== 'admin' ) {
           return res.status(403).json({
             message: 'Forbidden access'
@@ -20,7 +20,6 @@ class VerifyUser {
       }
     next();
     } catch (error) {
-      console.log('\n\n\n\n\n', error.message)
       return res.status(400).json({
         message: error.message
       });

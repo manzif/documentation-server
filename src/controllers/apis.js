@@ -1,20 +1,20 @@
 import model from '../db/models';
 
-const { Endpoint } = model;
+const { Api } = model;
 
-class EndpointsManager {
+class ApiManager {
 
-    static async viewEndpoint(req, res) {
+    static async viewApi(req, res) {
         try {
-            const endpoint = await Endpoint.findOne({ where: { id: req.params.id } });
-            if (endpoint) {
+            const api = await Api.findOne({ where: { id: req.params.id } });
+            if (api) {
                 return res.status(200).json({
-                    message: 'Endpoint retrieved successfuly',
-                    endpoint: endpoint
+                    message: 'Api retrieved successfuly',
+                    Api: api
                 });
             }
             return res.status(404).json({
-                message: 'Endpoint does not exist'
+                message: 'Api does not exist'
             });
         } catch (error) {
             return res.status(400).json({
@@ -25,9 +25,9 @@ class EndpointsManager {
     }
 
 
-    static async updateEndpoint(req, res) {
+    static async updateApi(req, res) {
         try {
-            const data = await Endpoint.findOne({ where: { id: req.params.id } });
+            const data = await Api.findOne({ where: { id: req.params.id } });
             const updated = await data.update({
               name: req.body.name || data.dataValues.name,
               description: req.body.description || data.dataValues.description,
@@ -40,8 +40,8 @@ class EndpointsManager {
               failure: req.body.failure
             });
             return res.status(200).json({
-              message: 'Endpoint successfuly updated',  
-              Endpoint: updated
+              message: 'Api successfuly updated',  
+              Api: updated
             });
         } catch (error) {
             return res.status(400).json({
@@ -51,32 +51,31 @@ class EndpointsManager {
     }
 
 
-    static async getAllEndpoints(req, res) {
+    static async getAllApis(req, res) {
         try {
-            const findEndpoints = await Endpoint.findAll({ where: { applicationId: req.params.applicationId }});
-            if (findEndpoints) {
-                return res.status(200).json({ total: findEndpoints.length, Endpoints: findEndpoints });
+            const findApis = await Api.findAll();
+            if (findApis) {
+                return res.status(200).json({ total: findApis.length, Apis: findApis });
             }
-            return res.status(400).json({ message: "No Endpoint Found" });
+            return res.status(400).json({ message: "No Api Found" });
         } catch (error) {
             return res.status(500).json({ error });
         }
     }
 
-    static async addEndpoint(req, res) {
+    static async addApi(req, res) {
         const { name, description, url, type, headers, query, body, success, failure } = req.body
-        const { applicationId } =  req.params
 
         try {
-            const findEndpoint = await Endpoint.findOne({
+            const findApi = await Api.findOne({
                 where: { url }
             });
-            if (findEndpoint && findEndpoint.dataValues.url === url && findEndpoint.dataValues.type === type && findEndpoint.dataValues.applicationId === applicationId) {
+            if (findApi && findApi.dataValues.url === url && findApi.dataValues.type === type) {
                 return res.status(400).json({
-                    message: 'endpoint already exists.'
+                    message: 'Api already exists.'
                 });
             }
-            await Endpoint
+            await Api
                 .create({
                     name,
                     description,
@@ -86,10 +85,9 @@ class EndpointsManager {
                     query,
                     body,
                     success,
-                    failure,
-                    applicationId
+                    failure
                 })
-            return res.status(201).send({ message: 'Endpoint successfully created', name, description, url, type, headers, query, body, success, failure, applicationId });
+            return res.status(201).send({ message: 'Api successfully created', name, description, url, type, headers, query, body, success, failure });
         } catch (error) {
             return res.status(400).json({
                 status: 400,
@@ -98,18 +96,18 @@ class EndpointsManager {
         }
     }
 
-    static async deleteEndpoint(req, res) {
+    static async deleteApi(req, res) {
             try {
                 const id = req.params.id
-                const endpoint = await Endpoint.findOne({ where: { id } });
-                if (endpoint) {
-                    await Endpoint.destroy({ where: { id } })
+                const api = await Api.findOne({ where: { id } });
+                if (api) {
+                    await Api.destroy({ where: { id } })
                     return res.status(200).json({
-                        message: 'Endpoint deleted successfuly'
+                        message: 'Api deleted successfuly'
                     });
                 }
                 return res.status(404).json({
-                    message: 'Endpoint does not exist'
+                    message: 'Api does not exist'
                 });
             } catch (error) {
                 return res.status(400).json({
@@ -120,4 +118,4 @@ class EndpointsManager {
 
 }
 
-export default EndpointsManager;
+export default ApiManager;

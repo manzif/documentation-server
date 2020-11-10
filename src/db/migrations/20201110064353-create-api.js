@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('Endpoints', {
+    await queryInterface.createTable('Apis', {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -35,16 +35,6 @@ module.exports = {
       failure: {
         type: Sequelize.STRING
       },
-      applicationId: {
-            type: Sequelize.DataTypes.UUID,
-            defaultValue: Sequelize.literal('uuid_generate_v4()'),
-            onDelete: 'CASCADE',
-            references: {
-              model: 'Applications',
-              key: 'id',
-              as: 'applicationId',
-            }
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -56,6 +46,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('Endpoints');
+    await queryInterface.dropTable('Apis');
   }
 };

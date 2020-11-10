@@ -22,5 +22,10 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Application',
   });
+  Application.associate = (models) => {
+    Application.hasMany(models.Endpoint, {
+      foreignKey: 'applicationId',
+    });
+  };
   return Application;
 };
