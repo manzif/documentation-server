@@ -20,9 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     type: DataTypes.STRING,
     headers: DataTypes.ARRAY(DataTypes.JSON),
     query: DataTypes.ARRAY(DataTypes.JSON),
-    body: DataTypes.STRING,
-    success: DataTypes.STRING,
-    failure: DataTypes.STRING,
+    body: DataTypes.TEXT,
+    success: DataTypes.TEXT,
+    failure: DataTypes.TEXT,
     applicationId: {
             type: DataTypes.UUID,
             references: {

@@ -27,21 +27,21 @@ module.exports = {
         type: Sequelize.ARRAY(Sequelize.JSON)
       },
       body: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       success: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       failure: {
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATEONLY
       }
     });
   },
