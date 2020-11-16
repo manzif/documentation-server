@@ -29,11 +29,20 @@ module.exports = {
       body: {
         type: Sequelize.TEXT
       },
+      bodyDescription: {
+        type: Sequelize.ARRAY(Sequelize.JSON)
+      },
       success: {
         type: Sequelize.TEXT
       },
+      successDescription: {
+        type: Sequelize.ARRAY(Sequelize.JSON)
+      },
       failure: {
         type: Sequelize.TEXT
+      },
+      failureDescription: {
+        type: Sequelize.ARRAY(Sequelize.JSON)
       },
       applicationId: {
             type: Sequelize.DataTypes.UUID,

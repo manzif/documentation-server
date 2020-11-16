@@ -36,8 +36,11 @@ class ApiManager {
               headers: req.body.headers,
               query: req.body.query,
               body: req.body.body,
+              bodyDescription: req.body.bodyDescription,
               success: req.body.success,
-              failure: req.body.failure
+              successDescription: req.body.successDescription,
+              failure: req.body.failure,
+              failureDescription: req.body.failureDescription
             });
             return res.status(200).json({
               message: 'Api successfuly updated',  
@@ -64,7 +67,7 @@ class ApiManager {
     }
 
     static async addApi(req, res) {
-        const { name, description, url, type, headers, query, body, success, failure } = req.body
+        const { name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription } = req.body
 
         try {
             const findApi = await Api.findOne({
@@ -84,10 +87,13 @@ class ApiManager {
                     headers,
                     query,
                     body,
+                    bodyDescription,
                     success,
-                    failure
+                    successDescription,
+                    failure,
+                    failureDescription
                 })
-            return res.status(201).send({ message: 'Api successfully created', name, description, url, type, headers, query, body, success, failure });
+            return res.status(201).send({ message: 'Api successfully created', name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription });
         } catch (error) {
             return res.status(400).json({
                 status: 400,

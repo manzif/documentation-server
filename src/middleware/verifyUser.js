@@ -15,14 +15,20 @@ class VerifyUser {
 
       if (id !== req.params.id && role !== 'admin' ) {
           return res.status(403).json({
-            message: 'Forbidden access'
+            message: 'You are not allowed to access this route.'
         });
       }
     next();
     } catch (error) {
-      return res.status(400).json({
-        message: error.message
-      });
+      if (error.message === "Cannot read property 'split' of undefined") {
+        return res.status(400).json({
+          message: 'Please login'
+        });
+      }else {
+        return res.status(400).json({
+          message: error.message
+        });
+        }  
     }
   }
 
@@ -67,10 +73,10 @@ class VerifyUser {
       const token = bearer[1];
       req.token = token;
 
-      const { id, role } = await Helper.verifyToken(token);
-      if (id !== req.params.id && role !== "admin") {
+      const { role } = await Helper.verifyToken(token);
+      if (! (role == "admin" || role == "developer") ) {
         return res.status(403).json({
-          message: 'Forbidden access'
+          message: 'You are not allowed to access this route'
         });
       }
       next();

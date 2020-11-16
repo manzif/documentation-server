@@ -21,8 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     headers: DataTypes.ARRAY(DataTypes.JSON),
     query: DataTypes.ARRAY(DataTypes.JSON),
     body: DataTypes.TEXT,
+    bodyDescription: DataTypes.ARRAY(DataTypes.JSON),
     success: DataTypes.TEXT,
+    successDescription: DataTypes.ARRAY(DataTypes.JSON),
     failure: DataTypes.TEXT,
+    failureDescription: DataTypes.ARRAY(DataTypes.JSON),
     applicationId: {
             type: DataTypes.UUID,
             references: {
@@ -30,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
               key: 'id',
               as: 'applicationId',
             }
-      },
+    }
   }, {
     sequelize,
     modelName: 'Endpoint',

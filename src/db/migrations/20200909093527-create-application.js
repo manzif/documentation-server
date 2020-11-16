@@ -14,11 +14,17 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      userId: {
-        type: Sequelize.STRING
-      },
       userName: {
         type: Sequelize.STRING
+      },
+      userId: {
+        type: Sequelize.DataTypes.UUID,
+        defaultValue: Sequelize.literal('uuid_generate_v4()'),
+          references: {
+            model: 'Users',
+            key: 'id',
+            as: 'userId',
+          }
       },
       createdAt: {
         allowNull: false,

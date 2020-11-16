@@ -16,12 +16,24 @@ module.exports = (sequelize, DataTypes) => {
   Application.init({
     title: DataTypes.STRING,
     description: DataTypes.STRING,
-    userId: DataTypes.STRING,
-    userName: DataTypes.STRING
+    userName: DataTypes.STRING,
+    userId: {
+      type: DataTypes.UUID,
+        references: {
+          model: 'User',
+          key: 'id',
+          as: 'userId',
+        }
+    }
   }, {
     sequelize,
     modelName: 'Application',
   });
+  Application.associate = (models) => {
+    Application.belongsTo(models.User, {
+      foreignKey: 'userId'
+  });
+  };
   Application.associate = (models) => {
     Application.hasMany(models.Endpoint, {
       foreignKey: 'applicationId',

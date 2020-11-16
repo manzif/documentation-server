@@ -1,6 +1,5 @@
 import model from '../db/models';
-import { dataUri } from '../middleware/multer';
-import { uploader } from '../db/config/cloudinaryConfig';
+import Helper from '../helper/helper';
 
 const { Application } = model;
 
@@ -28,47 +27,85 @@ class ApplicationManager {
 
     static async updateApplication(req, res) {
         try {
-            if (req.file) {
-                const file = dataUri(req).content;
-                const result = await uploader.upload(file);
-                req.body.profile = result.url;
+            const data = await Application.findOne({ where: { id: req.params.id } });
+            const header = req.headers['authorization'];
+            const bearer = header.split(' ');
+            const token = bearer[1];
+            req.token = token;
+
+            const { id, role } = await Helper.verifyToken(token);
+
+            if (id === data.dataValues.userId || role === 'admin' ) {
+                const updated = await data.update({
+                title: req.body.title || data.dataValues.title,
+                description: req.body.description || data.dataValues.description
+                });
+                return res.status(200).json({
+                message: 'Application updated successfuly'  ,
+                Application: updated
+                });
             }
-            console.log('\n\n\n\n\n\n', req.body.profile)
-            // const data = await User.findOne({ where: { username: req.params.username } });
-            // console.log('\n\n\n\n\n\n', req.body.profile)
-            // const updated = await data.update({
-            //   firstname: req.body.firstname || data.dataValues.firstname,
-            //   lastname: req.body.lastname || data.lastname,
-            //   email: req.body.email || data.email,
-            //   username: req.body.username || data.username,
-            //   profile: req.body.profile || data.dataValues.profile
-            // });
-            // updated.password = undefined;
-            // return res.status(200).json({
-            //   user: updated
-            // });
-        } catch (error) {
-            return res.status(400).json({
-                message: error.message
+            return res.status(403).json({
+                message: 'You are not allowed to access this route.'
             });
+        } catch (error) {
+          if (error.message === "Cannot read property 'split' of undefined") {
+            return res.status(400).json({
+             message: 'Please login'
+          });
+        } else {
+                return res.status(400).json({
+                message: error.message
+                });
+            }
         }
     }
 
 
     static async getAllApplications(req, res) {
         try {
-            const findApplications = await Application.findAll();
-            if (findApplications) {
-                return res.status(200).json({ total: findApplications.length, applications: findApplications });
+            const header = req.headers['authorization'];
+            const bearer = header.split(' ');
+            const token = bearer[1];
+            req.token = token;
+            const { id, role } = await Helper.verifyToken(token);
+            if (role === 'developer') {
+                const findApplications = await Application.findAll({ where: { userId: id }});
+                if (findApplications) {
+                    return res.status(200).json({ total: findApplications.length, Application: findApplications });
+                }
+                return res.status(400).json({ message: "No Application Found" });
+            } else if (role === 'admin') {
+                const findApplications = await Application.findAll();
+                if (findApplications) {
+                    return res.status(200).json({ total: findApplications.length, Application: findApplications });
+                }
+                return res.status(400).json({ message: "No Application Found" });
+            } else {
+                return res.status(400).json({
+                message: 'You are not allowed to access this API route'
+                });
             }
-            return res.status(400).json({ message: "No Application Found" });
         } catch (error) {
-            return res.status(500).json({ error });
-        }
+          if (error.message === "Cannot read property 'split' of undefined") {
+            return res.status(400).json({
+             message: 'Please login'
+          });
+       } else {
+        return res.status(400).json({
+          message: error.message
+        });
+      }
+     }
     }
 
     static async addApplication(req, res) {
-        const { title, description, userId, userName } = req.body
+        const header = req.headers['authorization'];
+        const bearer = header.split(' ');
+        const token = bearer[1];
+        req.token = token;
+        const { id, firstname, lastname } = await Helper.verifyToken(token);
+        const { title, description } = req.body
 
         try {
             const findApplication = await Application.findOne({
@@ -83,10 +120,10 @@ class ApplicationManager {
                 .create({
                     title,
                     description,
-                    userId,
-                    userName
+                    userId: id,
+                    userName: firstname + " " + lastname
                 })
-            return res.status(201).send({ message: 'Application successfully created', title, description, userId, userName });
+            return res.status(201).send({ message: 'Application successfully created', title, description, userId: id, userName:  firstname + " " + lastname });
         } catch (error) {
             return res.status(400).json({
                 status: 400,

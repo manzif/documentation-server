@@ -96,6 +96,8 @@ class Users {
           const payload = {
             id: userData.id,
             username: userData.username,
+            firstname: userData.firstname,
+            lastname: userData.lastname,
             email: userData.email,
             role: userData.role,
           }
@@ -176,6 +178,31 @@ class Users {
     }
   }
 
+  
+  static async updateUser(req, res) {
+    try {
+      const data = await User.findOne({ where: { id: req.params.id } });
+      const { username, email, role, firstname, lastname, password } = req.body
+      const hashPassword = Helper.hashPassword(password);
+
+      const updated = await data.update({
+        firstname: firstname || data.dataValues.firstname,
+        lastname: lastname || data.dataValues.lastname,
+        role: role || data.dataValues.role,
+        username: username || data.dataValues.username,
+        password: hashPassword || data.dataValues.password,
+        email: email || data.dataValues.email,
+      });
+      return res.status(200).json({
+        message: 'User updated successfully',
+        user: updated
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: error.message
+      });
+    }
+  }
 
 }
 
