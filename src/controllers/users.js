@@ -6,7 +6,7 @@ const { User } = model;
 class Users {
   static async signUp(req, res) {
 
-    const { username, email, role, firstname, lastname, password } = req.body
+    const { username, email, role, firstname, lastname, password, assignedItems } = req.body
     if (!Helper.isValidEmail(req.body.email)) {
       return res.status(400).send({ 'message': 'Please enter a valid email address' });
     }
@@ -27,6 +27,7 @@ class Users {
         role,
         firstname,
         lastname,
+        assignedItems,
         password: hashPassword
       })
       const payload = {email, username, role, firstname, lastname}
@@ -182,22 +183,32 @@ class Users {
   static async updateUser(req, res) {
     try {
       const data = await User.findOne({ where: { id: req.params.id } });
-      const { username, email, role, firstname, lastname, password } = req.body
-      const hashPassword = Helper.hashPassword(password);
-
+      const { username, email, role, firstname, lastname, password, assignedItems } = req.body
+      let hashPassword = ''
+      let assignedItemsValue = data.dataValues.assignedItems
+      if(password) {
+        hashPassword = Helper.hashPassword(password);
+      }
+      if(assignedItems) {
+        assignedItemsValue.push(assignedItems)
+      }
+      console.log('\n\n\n\n', assignedItemsValue)
       const updated = await data.update({
         firstname: firstname || data.dataValues.firstname,
         lastname: lastname || data.dataValues.lastname,
         role: role || data.dataValues.role,
         username: username || data.dataValues.username,
+        assignedItems: assignedItemsValue,
         password: hashPassword || data.dataValues.password,
         email: email || data.dataValues.email,
       });
+      console.log('\n\n\n\n', 'ndi hano')
       return res.status(200).json({
         message: 'User updated successfully',
         user: updated
       });
     } catch (error) {
+      console.log('\n\n\n\n', error.message)
       return res.status(400).json({
         message: error.message
       });

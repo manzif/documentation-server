@@ -29,6 +29,9 @@ module.exports = {
       role: {
         type: Sequelize.STRING
       },
+      assignedItems: {
+        type: Sequelize.ARRAY(Sequelize.STRING)
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATEONLY

@@ -10,7 +10,7 @@ class ApplicationManager {
             const application = await Application.findOne({ where: { id: req.params.id } });
             if (application) {
                 return res.status(200).json({
-                    application: application
+                    Application: application
                 });
             }
             return res.status(404).json({
@@ -72,13 +72,13 @@ class ApplicationManager {
             if (role === 'developer') {
                 const findApplications = await Application.findAll({ where: { userId: id }});
                 if (findApplications) {
-                    return res.status(200).json({ total: findApplications.length, Application: findApplications });
+                    return res.status(200).json({ total: findApplications.length, Applications: findApplications });
                 }
                 return res.status(400).json({ message: "No Application Found" });
             } else if (role === 'admin') {
                 const findApplications = await Application.findAll();
                 if (findApplications) {
-                    return res.status(200).json({ total: findApplications.length, Application: findApplications });
+                    return res.status(200).json({ total: findApplications.length, Applications: findApplications });
                 }
                 return res.status(400).json({ message: "No Application Found" });
             } else {
