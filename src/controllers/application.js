@@ -68,7 +68,8 @@ class ApplicationManager {
             const bearer = header.split(' ');
             const token = bearer[1];
             req.token = token;
-            const { id, role } = await Helper.verifyToken(token);
+            let assignedApplicationsTest = []
+            const { id, role, assignedItems } = await Helper.verifyToken(token);
             if (role === 'developer') {
                 const findApplications = await Application.findAll({ where: { userId: id }});
                 if (findApplications) {
@@ -81,10 +82,20 @@ class ApplicationManager {
                     return res.status(200).json({ total: findApplications.length, Applications: findApplications });
                 }
                 return res.status(400).json({ message: "No Application Found" });
-            } else {
-                return res.status(400).json({
-                message: 'You are not allowed to access this API route'
+            } else if(role === 'guest') {
+                const findApplications = await Application.findAll();
+                if(findApplications) {
+                    assignedItems.forEach(function(number) {
+                    let assignedApplications =  findApplications.filter(function(hero) {
+                        return hero.id == number;
+                    });
+                    console.log('\n\n\n\n\n\n\n\n\n\n', assignedApplications);
+                    assignedApplicationsTest = assignedApplications
+                    return res.status(200).json({ assignedApplications, assignedApplicationsTest });
                 });
+                } else {
+                   return res.status(400).json({ message: 'No application found' })
+                }
             }
         } catch (error) {
           if (error.message === "Cannot read property 'split' of undefined") {

@@ -89,7 +89,8 @@ class Users {
           role: findUser.dataValues.role,
           firstname: findUser.dataValues.firstname,
           lastname: findUser.dataValues.lastname,
-          password: findUser.dataValues.password
+          password: findUser.dataValues.password,
+          assignedItems: findUser.dataValues.assignedItems
         };
         const hashPassword = findUser.dataValues.password
         const password = req.body.password
@@ -101,6 +102,7 @@ class Users {
             lastname: userData.lastname,
             email: userData.email,
             role: userData.role,
+            assignedItems: userData.assignedItems
           }
           const token = Helper.generateToken(payload);
           return res.status(200).json({
@@ -185,14 +187,19 @@ class Users {
       const data = await User.findOne({ where: { id: req.params.id } });
       const { username, email, role, firstname, lastname, password, assignedItems } = req.body
       let hashPassword = ''
-      let assignedItemsValue = data.dataValues.assignedItems
+      let assignedItemsValue = []
       if(password) {
         hashPassword = Helper.hashPassword(password);
       }
       if(assignedItems) {
-        assignedItemsValue.push(assignedItems)
+        if(data.dataValues.assignedItems === null) {
+          assignedItemsValue.push(assignedItems)
+        }
+        else {
+          assignedItemsValue = data.dataValues.assignedItems
+          assignedItemsValue.push(assignedItems)
+        }
       }
-      console.log('\n\n\n\n', assignedItemsValue)
       const updated = await data.update({
         firstname: firstname || data.dataValues.firstname,
         lastname: lastname || data.dataValues.lastname,
@@ -202,13 +209,11 @@ class Users {
         password: hashPassword || data.dataValues.password,
         email: email || data.dataValues.email,
       });
-      console.log('\n\n\n\n', 'ndi hano')
       return res.status(200).json({
         message: 'User updated successfully',
         user: updated
       });
     } catch (error) {
-      console.log('\n\n\n\n', error.message)
       return res.status(400).json({
         message: error.message
       });
