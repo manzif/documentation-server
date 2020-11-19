@@ -68,7 +68,6 @@ class ApplicationManager {
             const bearer = header.split(' ');
             const token = bearer[1];
             req.token = token;
-            let assignedApplicationsTest = []
             const { id, role, assignedItems } = await Helper.verifyToken(token);
             if (role === 'developer') {
                 const findApplications = await Application.findAll({ where: { userId: id }});
@@ -84,18 +83,25 @@ class ApplicationManager {
                 return res.status(400).json({ message: "No Application Found" });
             } else if(role === 'guest') {
                 const findApplications = await Application.findAll();
-                if(findApplications) {
-                    assignedItems.forEach(function(number) {
-                    let assignedApplications =  findApplications.filter(function(hero) {
-                        return hero.id == number;
-                    });
-                    console.log('\n\n\n\n\n\n\n\n\n\n', assignedApplications);
-                    assignedApplicationsTest = assignedApplications
-                    return res.status(200).json({ assignedApplications, assignedApplicationsTest });
-                });
-                } else {
-                   return res.status(400).json({ message: 'No application found' })
+                let receivedApplications= []
+                const sweeterArray = findApplications.map(sweetItem => {
+                    return sweetItem.dataValues
+                })
+                let bigCities = [];
+                var arrayLength = assignedItems.length;
+                for (let i = 0; i < arrayLength; i++) {
+                    let assignedApplications =  sweeterArray.filter(x => x.id == assignedItems[i]);
+                    bigCities.push(assignedApplications);
                 }
+                
+                for(let i = 0; i < bigCities.length; i++) {
+                    let bigCity = bigCities[i];
+                    for(var j = 0; j < bigCity.length; j++) {
+                        let bigCit = bigCity[j];
+                        receivedApplications.push(bigCit)
+                    }
+                }
+                return res.status(200).json({ total: receivedApplications.length, Applications: receivedApplications })
             }
         } catch (error) {
           if (error.message === "Cannot read property 'split' of undefined") {

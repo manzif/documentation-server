@@ -1,4 +1,5 @@
 import model from '../db/models';
+import Helper from '../helper/helper';
 
 const { Api } = model;
 
@@ -56,17 +57,70 @@ class ApiManager {
 
     static async getAllApis(req, res) {
         try {
-            const findApis = await Api.findAll();
-            if (findApis) {
-                return res.status(200).json({ total: findApis.length, Apis: findApis });
+            const header = req.headers['authorization'];
+            const bearer = header.split(' ');
+            const token = bearer[1];
+            req.token = token;
+            const { id, role, assignedItems } = await Helper.verifyToken(token);
+            if (role === 'developer') {
+                const findApis = await Api.findAll({ where: { userId: id }});
+                if (findApis) {
+                    return res.status(200).json({ total: findApis.length, Apis: findApis });
+                }
+                return res.status(400).json({ message: "No Application Found" });
+            } else if (role === 'admin') {
+                const findApis = await Api.findAll();
+                if (findApis) {
+                    return res.status(200).json({ total: findApis.length, Apis: findApis });
+                }
+                return res.status(400).json({ message: "No Application Found" });
+
+            } else if(role === 'guest') {
+                const findApis = await Api.findAll();
+                if(findApis) {
+                    let receivedApis= []
+
+                    // selecting only the values of APIs and storing them in the receivedApis array
+                    const apiArray = findApis.map(sweetItem => {
+                        return sweetItem.dataValues
+                    })
+                    let allSelectedApis = [];
+                    var arrayLength = assignedItems.length;
+                    for (let i = 0; i < arrayLength; i++) {
+                        let assignedApis =  apiArray.filter(x => x.id == assignedItems[i]);
+                        allSelectedApis.push(assignedApis);
+                    }
+                    
+                    for(let i = 0; i < allSelectedApis.length; i++) {
+                        let filteredApis = allSelectedApis[i];
+                        for(var j = 0; j < filteredApis.length; j++) {
+                            let oneSelectedApi = filteredApis[j];
+                            receivedApis.push(oneSelectedApi)
+                        }
+                    }
+                    return res.status(200).json({ total: receivedApis.length, Apis: receivedApis })
+                }
+                return res.status(400).json({ message: "No Api Found" });
             }
-            return res.status(400).json({ message: "No Api Found" });
         } catch (error) {
-            return res.status(500).json({ error });
-        }
+          if (error.message === "Cannot read property 'split' of undefined") {
+            return res.status(400).json({
+             message: 'Please login'
+          });
+       } else {
+        return res.status(400).json({
+          message: error.message
+        });
+      }
+     }
     }
 
     static async addApi(req, res) {
+        const header = req.headers['authorization'];
+        const bearer = header.split(' ');
+        const token = bearer[1];
+        req.token = token;
+        const { id, firstname, lastname } = await Helper.verifyToken(token);
         const { name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription } = req.body
 
         try {
@@ -91,9 +145,11 @@ class ApiManager {
                     success,
                     successDescription,
                     failure,
-                    failureDescription
+                    failureDescription,
+                    userId: id,
+                    userName: firstname + " " + lastname
                 })
-            return res.status(201).send({ message: 'Api successfully created', name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription });
+            return res.status(201).send({ message: 'Api successfully created', name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription, userId: id, userName:  firstname + " " + lastname  });
         } catch (error) {
             return res.status(400).json({
                 status: 400,

@@ -25,10 +25,24 @@ module.exports = (sequelize, DataTypes) => {
     success: DataTypes.TEXT,
     successDescription: DataTypes.ARRAY(DataTypes.JSON),
     failure: DataTypes.TEXT,
-    failureDescription: DataTypes.ARRAY(DataTypes.JSON)
+    failureDescription: DataTypes.ARRAY(DataTypes.JSON),
+    userName: DataTypes.STRING,
+    userId: {
+      type: DataTypes.UUID,
+        references: {
+          model: 'User',
+          key: 'id',
+          as: 'userId',
+        }
+    }
   }, {
     sequelize,
     modelName: 'Api',
   });
+  Api.associate = (models) => {
+    Api.belongsTo(models.User, {
+      foreignKey: 'userId'
+  });
+  };
   return Api;
 };

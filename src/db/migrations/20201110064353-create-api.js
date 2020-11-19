@@ -44,6 +44,18 @@ module.exports = {
       failureDescription: {
         type: Sequelize.ARRAY(Sequelize.JSON)
       },
+      userName: {
+        type: Sequelize.STRING
+      },
+      userId: {
+        type: Sequelize.DataTypes.UUID,
+        defaultValue: Sequelize.literal('uuid_generate_v4()'),
+          references: {
+            model: 'Users',
+            key: 'id',
+            as: 'userId',
+          }
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATEONLY

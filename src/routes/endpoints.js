@@ -6,7 +6,7 @@ const route = express.Router();
 
 route.post('/:applicationId', endpoints.addEndpoint);
 route.get('/endpoints/:id', verifyUser.isAdmin, endpoints.viewEndpoint);
-route.get('/:applicationId', verifyUser.isOwner, endpoints.getAllEndpoints);
+route.get('/:applicationId', endpoints.getAllEndpoints);
 route.patch('/endpoints/:id', verifyUser.isAdmin, endpoints.updateEndpoint);
 route.delete('/endpoints/:id', verifyUser.isAdmin, endpoints.deleteEndpoint);
 
