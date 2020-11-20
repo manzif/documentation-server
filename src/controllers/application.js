@@ -84,21 +84,21 @@ class ApplicationManager {
             } else if(role === 'guest') {
                 const findApplications = await Application.findAll();
                 let receivedApplications= []
-                const sweeterArray = findApplications.map(sweetItem => {
-                    return sweetItem.dataValues
+                const filteredArray = findApplications.map(filteredItem => {
+                    return filteredItem.dataValues
                 })
-                let bigCities = [];
+                let allSelectedApplications = [];
                 var arrayLength = assignedItems.length;
                 for (let i = 0; i < arrayLength; i++) {
-                    let assignedApplications =  sweeterArray.filter(x => x.id == assignedItems[i]);
-                    bigCities.push(assignedApplications);
+                    let assignedApplications =  filteredArray.filter(x => x.id == assignedItems[i]);
+                    allSelectedApplications.push(assignedApplications);
                 }
                 
-                for(let i = 0; i < bigCities.length; i++) {
-                    let bigCity = bigCities[i];
-                    for(var j = 0; j < bigCity.length; j++) {
-                        let bigCit = bigCity[j];
-                        receivedApplications.push(bigCit)
+                for(let i = 0; i < allSelectedApplications.length; i++) {
+                    let filteredInSelectedArray = allSelectedApplications[i];
+                    for(var j = 0; j < filteredInSelectedArray.length; j++) {
+                        let newApplication = filteredInSelectedArray[j];
+                        receivedApplications.push(newApplication)
                     }
                 }
                 return res.status(200).json({ total: receivedApplications.length, Applications: receivedApplications })

@@ -200,14 +200,25 @@ class Users {
           assignedItemsValue.push(assignedItems)
         }
       }
+      // update the user without touching to the assigned Apis all application
+      if(assignedItemsValue.length === 0) {
+        const updated = await data.update({
+          firstname: firstname || data.dataValues.firstname,
+          lastname: lastname || data.dataValues.lastname,
+          role: role || data.dataValues.role,
+          username: username || data.dataValues.username,
+          password: hashPassword || data.dataValues.password,
+          email: email || data.dataValues.email,
+        });
+        return res.status(200).json({
+          message: 'User updated successfully',
+          user: updated
+        });
+      }
+
+      //adding assigned APIs all application to the user
       const updated = await data.update({
-        firstname: firstname || data.dataValues.firstname,
-        lastname: lastname || data.dataValues.lastname,
-        role: role || data.dataValues.role,
-        username: username || data.dataValues.username,
-        assignedItems: assignedItemsValue,
-        password: hashPassword || data.dataValues.password,
-        email: email || data.dataValues.email,
+        assignedItems: assignedItemsValue
       });
       return res.status(200).json({
         message: 'User updated successfully',
