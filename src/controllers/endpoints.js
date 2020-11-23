@@ -35,9 +35,13 @@ class EndpointsManager {
               type: req.body.type || data.dataValues.type,
               headers: req.body.headers,
               query: req.body.query,
+              queryDescription: req.body.bodyDescription,
               body: req.body.body,
+              bodyDescription: req.body.bodyDescription,
               success: req.body.success,
-              failure: req.body.failure
+              successDescription: req.body.successDescription,
+              failure: req.body.failure,
+              failureDescription: req.body.failureDescription
             });
             return res.status(200).json({
               message: 'Endpoint successfuly updated',  
@@ -64,7 +68,7 @@ class EndpointsManager {
     }
 
     static async addEndpoint(req, res) {
-        const { name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription } = req.body
+        const { name, description, url, type, headers, query, queryDescription, body, bodyDescription, success, successDescription, failure, failureDescription } = req.body
         const { applicationId } =  req.params
 
         try {
@@ -92,7 +96,7 @@ class EndpointsManager {
                     failureDescription,
                     applicationId
                 })
-            return res.status(201).send({ message: 'Endpoint successfully created', name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription, applicationId });
+            return res.status(201).send({ message: 'Endpoint successfully created', name, description, url, type, headers, query, queryDescription, body, bodyDescription, success, successDescription, failure, failureDescription, applicationId });
         } catch (error) {
             return res.status(400).json({
                 status: 400,

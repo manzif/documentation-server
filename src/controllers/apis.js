@@ -36,6 +36,7 @@ class ApiManager {
               type: req.body.type || data.dataValues.type,
               headers: req.body.headers,
               query: req.body.query,
+              queryDescription: req.body.bodyDescription,
               body: req.body.body,
               bodyDescription: req.body.bodyDescription,
               success: req.body.success,
@@ -121,7 +122,7 @@ class ApiManager {
         const token = bearer[1];
         req.token = token;
         const { id, firstname, lastname } = await Helper.verifyToken(token);
-        const { name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription } = req.body
+        const { name, description, url, type, headers, query, queryDescription, body, bodyDescription, success, successDescription, failure, failureDescription } = req.body
 
         try {
             const findApi = await Api.findOne({
@@ -140,6 +141,7 @@ class ApiManager {
                     type,
                     headers,
                     query,
+                    queryDescription,
                     body,
                     bodyDescription,
                     success,
@@ -149,7 +151,7 @@ class ApiManager {
                     userId: id,
                     userName: firstname + " " + lastname
                 })
-            return res.status(201).send({ message: 'Api successfully created', name, description, url, type, headers, query, body, bodyDescription, success, successDescription, failure, failureDescription, userId: id, userName:  firstname + " " + lastname  });
+            return res.status(201).send({ message: 'Api successfully created', name, description, url, type, headers, query, queryDescription, body, bodyDescription, success, successDescription, failure, failureDescription, userId: id, userName:  firstname + " " + lastname  });
         } catch (error) {
             return res.status(400).json({
                 status: 400,

@@ -26,6 +26,9 @@ module.exports = {
       query: {
         type: Sequelize.ARRAY(Sequelize.JSON)
       },
+      queryDescription: {
+        type: Sequelize.ARRAY(Sequelize.JSON)
+      },
       body: {
         type: Sequelize.TEXT
       },

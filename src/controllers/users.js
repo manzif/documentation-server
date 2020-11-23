@@ -231,6 +231,31 @@ class Users {
     }
   }
 
+  static async updatePassword(req, res) {
+    try {
+      const findUser = await User.findOne({ where: { id: req.body.id } });
+      const { newPassword, oldPassword } = req.body
+
+      const hashPassword = findUser.dataValues.password
+      const newhashPassword = Helper.hashPassword(newPassword);
+      if (Helper.comparePassword(hashPassword, oldPassword)) {
+        const updated = await findUser.update({
+        password: newhashPassword
+        });
+        return res.status(200).json({
+        message: 'Password changed successfully',
+        user: updated
+      });
+      }
+      return res.status(400).json({
+        message: 'Old Password is incorrect'
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: error.message
+      });
+    }
+  }
 }
 
 export default Users;
